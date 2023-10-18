@@ -36,7 +36,8 @@ Book * read_book(char * filename) {
   Book * book = (Book *) malloc(sizeof(Book));
   FILE * file = fopen(filename, "r");
   if (file == NULL) {
-    printf("Error al abrir el archivo %s\n", filename);
+    printf("Error al abrir el archivo %s: %s\n", filename, strerror(1)); 
+    free(book);
     return NULL;
   }
   char line[256];
@@ -102,9 +103,8 @@ void index_book(Book * book, HashMap * global_map) {
   }
 }
 
-HashMap * load_books(char * input) {
-  HashMap * book_map = createMap(1000);
-  HashMap * global_map = createMap(10000);
+HashMap * load_books(char * input,HashMap * book_map, HashMap * global_map) {
+
   char * name = strdup(input);
   strtok(name, " ");
   if (strstr(name, ".txt") != NULL) {
@@ -162,7 +162,7 @@ void search_by_title(char * input, HashMap * global_map) {
   Heap * book_heap = createHeap();
   int words = 0;
   char * token = strtok(input, " ");
-  Book * current_book; // Declaración de la variable book
+  Book * current_book;
 
   while (token != NULL) {
     words++;
@@ -172,7 +172,7 @@ void search_by_title(char * input, HashMap * global_map) {
       while (current_book != NULL) {
         int match = 1;
         char * title = strdup(current_book->title);
-        char * word_check = strtok(input, " "); // Cambio de nombre de variable para evitar conflicto
+        char * word_check = strtok(input, " ");
         while (word_check != NULL) {
           if (strstr(title, word_check) == NULL) {
             match = 0;
@@ -307,29 +307,33 @@ void show_word_context(char * title, char * search_word, HashMap * global_map) {
   fclose(file);
 }
 
-void show_menu(HashMap * book_map, HashMap * global_map) {
+int main() {
+  HashMap* global_map = createMap(1000);
   int option = 0;
   char input[256];
   char title[256];
   char word[256];
   int id;
+  HashMap * book_map = createMap(200);
+  printf("||=====================================================||\n");
+  printf("||Bienvenido al gestor de libros del proyecto Gutenberg||\n");
+  printf("||=====================================================||\n\n");
   do {
-    printf("Menú de opciones:\n");
-    printf("1. Cargar documentos\n");
-    printf("2. Mostrar documentos ordenados\n");
-    printf("3. Buscar un libro por título\n");
-    printf("4. Palabras con mayor frecuencia\n");
-    printf("5. Palabras más relevantes\n");
-    printf("6. Buscar por palabra\n");
-    printf("7. Mostrar palabra en su contexto dentro del libro\n");
-    printf("8. Salir\n");
+    printf(">1. [Cargar documentos]\n");
+    printf(">2. [Mostrar documentos ordenados]\n");
+    printf(">3. [Buscar un libro por título]\n");
+    printf(">4. [Palabras con mayor frecuencia]\n");
+    printf(">5. [Palabras más relevantes]\n");
+    printf(">6. [Buscar por palabra]\n");
+    printf(">7. [Mostrar palabra en su contexto dentro del libro]\n");
+    printf(">8. [Salir]\n\n");
     printf("Ingrese el número de la opción que desea realizar:\n");
     scanf("%d", &option);
     switch (option) {
       case 1:
         printf("Ingrese el nombre de un archivo txt o una carpeta con archivos txt:\n");
-        fgets(input, 256, stdin);
-        book_map = load_books(input);
+        scanf("%s",input);
+        load_books(input, book_map, global_map);
         break;
       case 2:
         show_books(book_map);
@@ -367,19 +371,5 @@ void show_menu(HashMap * book_map, HashMap * global_map) {
         break;
     }
   } while (option != 8);
-}
-
-
-int main() {
-  HashMap* global_map = createMap(1000);
-  char input[256];
-  printf("Ingrese el nombre de un archivo txt o una carpeta con archivos txt:\n");
-  fgets(input, 256, stdin);
-  HashMap * book_map = load_books(input);
-  if (book_map != NULL) {
-    show_menu(book_map, global_map); 
-    } else {
-      printf("No se pudo cargar ningún libro\n");
-    }
   return 0;
 }
