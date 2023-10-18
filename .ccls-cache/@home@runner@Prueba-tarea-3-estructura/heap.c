@@ -111,9 +111,16 @@ Heap* createHeap() {
 }
 
 int heap_empty(Heap * pq) {
-      if (pq->size == 0) {
-        return 1;
-      } else {
-        return 0;
-      }
-    }
+  if (pq->size == 0) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+int heap_size(Heap * pq) {
+  if (pq == NULL) {
+    return 0;
+  } else {
+    return pq->size;
+  }
+}

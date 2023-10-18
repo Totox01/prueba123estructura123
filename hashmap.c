@@ -6,15 +6,8 @@
 #include "hashmap.h"
 
 
-typedef struct HashMap HashMap;
-int enlarge_called=0;
 
-struct HashMap {
-    Pair ** buckets;
-    long size; 
-    long capacity; 
-    long current; 
-};
+int enlarge_called=0;
 
 Pair * createPair( char * key,  void * value) {
     Pair * new = (Pair *)malloc(sizeof(Pair));
