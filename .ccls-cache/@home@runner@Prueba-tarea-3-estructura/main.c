@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <dirent.h>
 #include <math.h>
 #include "list.h"
@@ -21,6 +22,15 @@ typedef struct {
   double rel;
   List * pos_list;
 } Word;
+
+char* strlwr(char* str) {
+    char* original = str;
+    while (*str) {
+        *str = tolower((unsigned char) *str);
+        str++;
+    }
+    return original;
+}
 
 Book * read_book(char * filename) {
   Book * book = (Book *) malloc(sizeof(Book));
@@ -179,7 +189,7 @@ void search_by_title(char * input, HashMap * global_map) {
     }
     token = strtok(NULL, " ");
   }
-  printf("Se encontraron %d libros que coinciden con las %d palabras ingresadas:\n", book_heap->size, words);
+  printf("Se encontraron %d libros que coinciden con las %d palabras ingresadas:\n", heap_size(book_heap), words);
   while (!heap_empty(book_heap)) {
     current_book = (Book *) heap_top(book_heap);
     printf("Id: %d\n", current_book->id);
